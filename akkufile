@@ -8,7 +8,7 @@ pipeline {
     stage('Git checkout'){
       steps{
          echo 'This is for cloning the Gitrepo'
-         git "https://github.com/12akverma123/star-agile-insurance-project.git"
+         git "https://github.com/12akverma123/star-agile-banking-finance.git"
       }
     }
     stage('Create a Package'){
