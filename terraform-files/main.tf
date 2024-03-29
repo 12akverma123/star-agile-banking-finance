@@ -19,6 +19,9 @@ resource "google_compute_instance" "deployment_instance" {
     ssh-keys = "akkuverma217:${file("~/.ssh/id_rsa.pub")}"
   }
   provisioner "local-exec" {
+    command = "echo $(google_compute_instance.deployment_instance.External_IP)"
+  }
+  provisioner "local-exec" {
     command = "ansible-playbook /var/lib/jenkins/workspace/Banking-Project/terraform-files/ansibleplaybook.yml"
   }
 }
