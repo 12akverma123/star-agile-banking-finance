@@ -1,0 +1,54 @@
+
+pipeline {
+  agent any
+    tools{
+      maven 'M2_HOME'
+    }
+   stages{
+    stage('Git checkout'){
+      steps{
+         echo 'This is for cloning the Gitrepo'
+         git "https://github.com/12akverma123/star-agile-insurance-project.git"
+      }
+    }
+    stage('Create a Package'){
+      steps{
+         echo "This will create a package using maven"
+         sh 'mvn package'
+      }
+    }
+    stage('Publish the HTML reports'){
+      steps{
+         publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '/var/lib/jenkins/workspace/Insure-Project/target/surefire-reports', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+      }
+    }
+    stage('Create a Docker image from the package Insure-Me.jar file'){
+      steps{
+        sh 'docker build -t 12akverma123/insure_me_app:1.0 .'
+      }
+   }
+    stage('Login to DockerHub'){
+      steps{
+        withCredentials([usernamePassword(credentialsId: '5f3a7bbd-c257-4562-a54e-4b385287ca40', passwordVariable: 'dockerpass', usernameVariable: 'dockeruser')]) {
+        sh 'docker login -u ${dockeruser} -p ${dockerpass}'
+      }
+    }
+    }
+    stage('push the image to Dockerhub'){
+      steps{
+         sh 'docker push 12akverma123/insure_me_app:1.0'
+      }
+    }
+    stage('find out the username'){
+      steps{
+         sh 'whoami'
+         sh 'who'
+      }
+    }
+    stage('ansible config and deployment'){
+      steps{
+         ansiblePlaybook credentialsId: '66f6cd33-0dcb-403d-8e2c-b84cff0d51f7', disableHostKeyChecking: true, installation: 'ansible', inventory: '/etc/ansible/hosts', playbook: 'ansible.yml', vaultTmpPath: ''
+      }
+    }
+  }
+}
