@@ -17,4 +17,4 @@
     become_user: root
 
   - name: Deploy the Image and Run as Container
-    command: docker run -itd -p 8086:8083 12akverma123/banking_app:2.0
+    command: docker run -itd -p 8087:8089 12akverma123/banking_app:2.0
